@@ -18,6 +18,12 @@ app.get('/', async (req, res) => {
   });
 });
 
+app.get('/api/shouts', (req, res) => {
+  db.all('SELECT * FROM shouts', (err, shouts) => {
+    res.json(shouts)
+  });
+});
+
 app.post('/api/shouts', (req, res) => {
   if (req.body.username && req.body.message) {
     db.run('INSERT INTO shouts(username, message) VALUES (?, ?);', [req.body.username, req.body.message], function (err) {

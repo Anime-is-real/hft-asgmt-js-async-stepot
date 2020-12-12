@@ -27,23 +27,8 @@ $( document ).ready((() => {
 
   form.on('submit', async (event) => {
     event.preventDefault();
-    const formData = {
-      username: input.val(),
-      message: textarea.val()
-    }
-
-    try {
-      const response = await fetch('/api/shouts', {
-        method: 'post',
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(formData)
-      })
-      const json = await response.json();
-    } catch (e) {
-      console.error(e)
-    }
+    await saveData(input.val(), textarea.val())
+    await getData()
   })
 }))
 
@@ -67,11 +52,37 @@ function toggleSubmit(disable) {
 }
 
 async function getData() {
-  // TODO: Implement
+  const tbody = $('.table > tbody')
+  tbody.empty()
+
+  const response = await fetch('/api/shouts', {
+    method: 'get',
+    headers: {
+      "Content-Type": "application/json"
+    }})
+
+  const json = await response.json()
+  json.forEach(entry => {
+    tbody.append(`<tr><td>${entry.id}</td><td>${entry.username}</td><td>${entry.message}</td></tr>`);
+  })
 }
 
 async function saveData(username, message) {
-  // TODO: Implement
+  try {
+    const response = await fetch('/api/shouts', {
+    method: 'post',
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      username: username, 
+      message: message
+    })
+  })
+  await response.json();
+} catch (e) {
+  console.error(e)
+}
 }
 
 // THIS IS FOR AUTOMATED TESTING
