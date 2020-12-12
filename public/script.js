@@ -13,8 +13,9 @@ $( document ).ready((() => {
   getData(); // TODO: Implement getData Method
   const input = $('#hft-shoutbox-form-input-name')
   const textarea = $('#hft-shoutbox-form-textarea')
+  const form = $('#hft-shoutbox-form');
 
-  $('#hft-shoutbox-form').on('keyup', (event) => {
+  form.on('keyup', (event) => {
     if (formElementIsValid(input.val(), 3) && formElementIsValid(textarea.val(), 10)) {
       toggleAlertBox(false)
       toggleSubmit(false)
@@ -24,7 +25,26 @@ $( document ).ready((() => {
     }
   })
 
-  // TODO: Handle submit
+  form.on('submit', async (event) => {
+    event.preventDefault();
+    const formData = {
+      username: input.val(),
+      message: textarea.val()
+    }
+
+    try {
+      const response = await fetch('/api/shouts', {
+        method: 'post',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData)
+      })
+      const json = await response.json();
+    } catch (e) {
+      console.error(e)
+    }
+  })
 }))
 
 function formElementIsValid(element, minLength) {

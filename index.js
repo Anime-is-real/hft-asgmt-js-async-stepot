@@ -14,25 +14,21 @@ app.use('/public', express.static(process.cwd() + '/public'));
 
 app.get('/', async (req, res) => {
   db.all('SELECT * FROM shouts', (err, shouts) => {
-    res.render('pages/index', { shouts })
+    res.render('pages/index', { shouts, success: true })
   });
 });
 
-app.get('/add-entry', (req, res) => {
-  res.render('pages/add-entry', { success: true });
-});
-
-app.post('/add-entry', (req, res) => {
+app.post('/api/shouts', (req, res) => {
   if (req.body.username && req.body.message) {
-    db.run('INSERT INTO shouts(username, message) VALUES (?, ?);', [req.body.username, req.body.message], (err) => {
+    db.run('INSERT INTO shouts(username, message) VALUES (?, ?);', [req.body.username, req.body.message], function (err) {
       if(err) {
-        res.render('pages/add-entry', { success: false });
+        res.json({error: err});
       } else {
-        res.redirect('/');
+        res.json({... req.body, id: this.lastID});
       }
     });
   } else {
-    res.render('pages/add-entry', { success: false });
+    res.json({error: 'Request body is incorrect'});
   }
 });
 
